@@ -14,16 +14,30 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import xarray as xr
 
-def calc_ForelUle_image(wavelength, reflectance):
+sensor_corr_file = 'data/sensor_hue_corr_WW2015'
+
+
+def _polynomial(coefs,x):
+    order = len(coefs)-1
+    return sum( [coef*x**(order-i) for i,coef in enumerate(coefs) ])
+
+
+def calc_ForelUle_image(wavelength, reflectance, sensorcorr=None, cmf='data/FUI_CIE1931_JV.tsv'):
     """ calculate Forel Ule index for multispectral image
     Arguments:
         wavelength: vector with wavlengths in nm of reflectances first dimension
         reflectance: 3D array with dimensions (wavelength, space_1, space_2) where space_* dimensions can be any aspace dimensions 
+        sensor: to do hue correction for (nocorr, olci, modis, seawifs) 
     Returns:
         Array with Forel Ule class between 1-21, with dimensions (space_1, space_2)
     """
     
-    cmf = pd.read_csv(sep = "\t", filepath_or_buffer = "data/FUI_CIE1931_JV.tsv")
+    if sensorcorr:
+        sensor_corr_file = 'data/sensor_hue_corr_WW2015'
+        sensorcorrdf = pd.read_csv(sensor_corr_file,index_col=0,)
+        sensor_coef = sensorcorrdf.loc[sensorcorr].values
+    
+    cmf = pd.read_csv(sep = "\t", filepath_or_buffer = cmf)
     fui = pd.read_csv(sep = "\t", filepath_or_buffer = "data/FUI_ATAN210.tsv", names = ["value", "atan"])
     
     Delta = cmf['wavelength'][1] - cmf['wavelength'][0]
@@ -31,7 +45,7 @@ def calc_ForelUle_image(wavelength, reflectance):
     # find overping wavlengths between cmf and multispectral image 
     start = max([cmf['wavelength'].iloc[0], wavelength.min()])
     end = min([cmf['wavelength'].iloc[-1], wavelength.max()])
-    print('wavelength overlap', start,end)
+    #print('wavelength overlap', start,end)
     cmfi = cmf[ (cmf['wavelength'] >= start) & (cmf['wavelength'] <= end) ]
         
     cmfi = {"wavelength": cmfi['wavelength'],
@@ -75,7 +89,24 @@ def calc_ForelUle_image(wavelength, reflectance):
     a_i = np.arctan2( chrom_w["y"], chrom_w["x"]) * 180 / math.pi
 
     a_i[a_i < 0] =  a_i[a_i < 0] + 360
-        
+    
+
+    if sensorcorr:
+        # Intrument correction for Hue Angle (Woerd and Wernand 2015)
+        # polynomical correction works on Hue angle (deg)/100
+
+        sensorcorrdf = pd.read_csv(sensor_corr_file,index_col=0,)
+        sensor_coef = sensorcorrdf.loc[sensorcorr].values
+
+        anglecorr = _polynomial(sensor_coef, a_i/100)
+#        correctionOLCI = (-12.5076*pow(a_i100,5) + 
+#                        91.6345*pow(a_i100,4) - 
+#                        249.8480*pow(a_i100,3) + 
+#                        308.6561*pow(a_i100,2) - 
+#                        165.4818*a_i100 + 28.5608 )
+
+        a_i = a_i + anglecorr
+    
     # ----- fui approximation
     fu_i = np.zeros(a_i.shape)
     fu_i[ a_i >= fui["atan"][0]] = 1   #FUI = 1 its > Average
