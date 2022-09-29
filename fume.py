@@ -13,6 +13,8 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import xarray as xr
+from matplotlib.colors import LinearSegmentedColormap
+
 
 sensor_corr_file = 'data/sensor_hue_corr_WW2015.csv'
 
@@ -45,7 +47,6 @@ def calc_ForelUle_image(wavelength, reflectance,
         sensor_coef = sensorcorrdf.loc[sensorcorr].values
     
     cmf = pd.read_csv(sep = "\t", filepath_or_buffer = cmf)
-    #fui = pd.read_csv(sep = "\t", filepath_or_buffer = "data/FUI_ATAN210.tsv", names = ["value", "atan"])
     fui = pd.read_csv(sep = ",", filepath_or_buffer = fucalibration, header=0)
     
     Delta = cmf['wavelength'][1] - cmf['wavelength'][0]
@@ -126,7 +127,7 @@ def calc_ForelUle_image(wavelength, reflectance,
     for c in range(1, len(fui)-1):
         fu_i[ (a_i < fui["lowerlimit"].iloc[c-1]) & (a_i >= fui["lowerlimit"].iloc[c]) ] = fui['FU'].iloc[c]            
         
-    return fu_i
+    return (fu_i,a_i)
 
 
 def calc_fu_WW2015(wavelength, reflec,sensor):
@@ -260,4 +261,48 @@ def calc_fu_WW2015(wavelength, reflec,sensor):
     elif (hueanglPcorr < 19):
         FUSentinel3Pcorr =  21
     
-    return FUSentinel3Pcorr
+    return (FUSentinel3Pcorr, hueanglPcorr)
+
+
+def forelulecmap():
+    # Returns Forel Ule colormap
+    
+    fuh ={"1":"#2158bc",
+          "2":"#316dc5",
+          "3":"#327cbb",
+          "4":"#4b80a0",
+          "5":"#568f96",
+          "6":"#6d9298",
+          "7":"#698c86",
+          "8":"#759e72",
+          "9":"#7ba654",
+          "10":"#7dae38",
+          "11":"#95b645",
+          "12":"#94b660",
+          "13":"#a5bc76",
+          "14":"#aab86d",
+          "15":"#adb55f",
+          "16":"#a8a965",
+          "17":"#ae9f5c",
+          "18":"#b3a053",
+          "19":"#af8a44",
+          "20":"#a46905",
+          "21":"#a14d04"}
+
+    def _hex_to_rgb(value):
+        '''
+        Converts hex to rgb colours
+        value: string of 6 characters representing a hex colour.
+        Returns: list length 3 of RGB values'''
+        value = value.strip("#") # removes hash symbol if present
+        lv = len(value)
+        return tuple(int(value[i:i + lv // 3], 16)/256 for i in range(0, lv, lv // 3))
+
+    furgb = [_hex_to_rgb(hexstr) for hexstr in fuh.values()]
+
+    cm = LinearSegmentedColormap.from_list('ForelUle',furgb,N=21)
+    cm.set_under(color='k', alpha=None)
+    cm.set_over(color='k', alpha=None)
+    cm.set_bad(color='k', alpha=0)
+    
+    return cm

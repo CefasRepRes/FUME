@@ -5,9 +5,10 @@ Works with both point data (observations) and images (satellite).
 Notebooks:
 
 * forel_ule_OLCI.ipynb - Example or loading, preprocessing, calculating and ploting FU from example OLCI images.
-* prep_test_images.ipynb - Utility to generate test images included.
 * Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015)
+* Test_FU_images - Applies FU to test images
 * forel_ule_tutorial.ipynb - Step by step calculation, with formulae and references.
+* prep_test_images.ipynb - Utility to generate test images included.
 
 Module fume
 ```
