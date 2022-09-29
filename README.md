@@ -9,36 +9,42 @@ Notebooks:
 * Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015)
 * forel_ule_tutorial.ipynb - Step by step calculation, with formulae and references.
 
-Module
-* fume
+Module fume
+```
     * calc_ForelUle_image(wavelength, reflectance, 
                           sensorcorr=None, 
                           cmf='data/FUI_CIE1931.tsv',
                           fucalibration='data/hue_angle_limits_WW2010.csv'):
     * calc_fu_WW2015(wavelength, reflec,sensor):
     # calculates Forel Ule following Woerd and Wernand 2015 supplementary material
+```
 
 Install in develop mode with:
     git clone https://github.com/jobel-openscience/FUME.git
     cd FUME
     pip install -e . 
 
-To use the module from:
-    import fume (?capitals?)
+To use the module:
+```
+import fume
+```
 
 To use FUME WHW2013
 
+```
 fume.calc_ForelUle_image(wavelength, 
                          satRrs,
                          sensorcorr=None,
                          fucalibration='data/hue_angle_limits_WW2010_decimalFU.csv')
+```
 
 To use FUME WW2015
-
+```
 fume.calc_ForelUle_image(wavelength, 
                          satRrs,
                          sensorcorr=sensor,
                          fucalibration='data/hue_angle_limits_NWW2013.csv')
+```
 
 ## References
 
