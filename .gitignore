@@ -6,10 +6,10 @@ __pycache__/
 .idea/
 build-*
 *.pyc
-borrame*
 *.cpp
 *.h
 *.user
 OLD*
 *.png
 *.PNG
+*egg-info/
