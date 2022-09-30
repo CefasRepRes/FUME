@@ -10,3 +10,4 @@ dependencies:
   - jupyterlab
   - ipython
   - netcdf4
+  - seaborn
