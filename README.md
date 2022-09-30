@@ -4,7 +4,6 @@ Works with both point data (observations) and images (satellite).
 
 Notebooks:
 
-* forel_ule_OLCI.ipynb - Example or loading, preprocessing, calculating and ploting FU from example OLCI images.
 * Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015)
 * Test_FU_images - Applies FU to test images
 * forel_ule_tutorial.ipynb - Step by step calculation, with formulae and references.
@@ -12,12 +11,17 @@ Notebooks:
 
 Module fume
 ```
-    * calc_ForelUle_image(wavelength, reflectance, 
-                          sensorcorr=None, 
-                          cmf='data/FUI_CIE1931.tsv',
-                          fucalibration='data/hue_angle_limits_WW2010.csv'):
-    * calc_fu_WW2015(wavelength, reflec,sensor):
-    # calculates Forel Ule following Woerd and Wernand 2015 supplementary material
+    calc_ForelUle_image(wavelength, reflectance, 
+                        sensorcorr=None, 
+                        cmf='data/FUI_CIE1931.tsv',
+                        fucalibration='data/hue_angle_limits_WW2010.csv')
+                        
+    calc_fu_WW2015(wavelength, reflec,sensor)
+        # calculates Forel Ule following Woerd and Wernand 2015 supplementary material. For point data only.
+        
+    forelulecmap()
+        # Generates a colormap for plotting Forel Ule classes
+        
 ```
 
 Install in develop mode with:
