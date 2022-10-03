@@ -15,18 +15,23 @@ from matplotlib import cm
 import xarray as xr
 from matplotlib.colors import LinearSegmentedColormap
 
+# Used to locate package data files
+def package_path(*paths, package_directory=os.path.dirname(os.path.abspath(__file__))):
+    return os.path.join(package_directory, *paths)
 
-sensor_corr_file = '/home/users/tsilva/git/FUME/data/sensor_hue_corr_WW2015.csv'
+sensor_corr_file = package_path('data','sensor_hue_corr_WW2015.csv')
 
 def _polynomial(coefs,x):
     order = len(coefs)-1
     return sum( [coef*x**(order-i) for i,coef in enumerate(coefs) ])
 
 
-def calc_ForelUle_image(wavelength, reflectance, 
-                        sensorcorr=None, 
-                        cmf='/home/users/tsilva/git/FUME/data/FUI_CIE1931.tsv',
-                        fucalibration='/home/users/tsilva/git/FUME/data/hue_angle_limits_WW2010.csv'):
+def calc_ForelUle_image(wavelength, 
+                        reflectance, 
+                        sensorcorr = None, 
+                        cmf = 'data/FUI_CIE1931.tsv',
+                        fucalibration = 'data/hue_angle_limits_WW2010.csv',
+                        ):
    
     """ calculate Forel Ule index for multispectral image
     Arguments:
@@ -40,13 +45,17 @@ def calc_ForelUle_image(wavelength, reflectance,
     Returns:
                        Array with Forel Ule class between 1-21, with 
                        dimensions (space_1, space_2)
+                       Array with hue angle, with dimensions (space_1, space_2)
     """
     
     if sensorcorr:
         sensorcorrdf = pd.read_csv(sensor_corr_file,index_col=0,)
         sensor_coef = sensorcorrdf.loc[sensorcorr].values
-    
+   
+    cmf = package_path(cmf)
     cmf = pd.read_csv(sep = "\t", filepath_or_buffer = cmf)
+
+    fucalibration = package_path(fucalibration)
     fui = pd.read_csv(sep = ",", filepath_or_buffer = fucalibration, header=0)
     
     Delta = cmf['wavelength'][1] - cmf['wavelength'][0]
