@@ -16,7 +16,7 @@ import xarray as xr
 from matplotlib.colors import LinearSegmentedColormap
 
 
-sensor_corr_file = 'data/sensor_hue_corr_WW2015.csv'
+sensor_corr_file = '/home/users/tsilva/git/FUME/data/sensor_hue_corr_WW2015.csv'
 
 def _polynomial(coefs,x):
     order = len(coefs)-1
@@ -25,8 +25,8 @@ def _polynomial(coefs,x):
 
 def calc_ForelUle_image(wavelength, reflectance, 
                         sensorcorr=None, 
-                        cmf='data/FUI_CIE1931.tsv',
-                        fucalibration='data/hue_angle_limits_WW2010.csv'):
+                        cmf='/home/users/tsilva/git/FUME/data/FUI_CIE1931.tsv',
+                        fucalibration='/home/users/tsilva/git/FUME/data/hue_angle_limits_WW2010.csv'):
    
     """ calculate Forel Ule index for multispectral image
     Arguments:
