@@ -70,7 +70,10 @@ def calc_ForelUle_image(wavelength,
             "x": np.reshape( cmfi['x'].values, [len(cmfi['x']),1,1] ),
             "y": np.reshape( cmfi['y'].values, [len(cmfi['y']),1,1] ),
             "z": np.reshape( cmfi['z'].values, [len(cmfi['z']),1,1] )}
-    
+ 
+    # Filter out unphysical reflectances from Atmospheric Correction
+    reflectance = reflectance.where( reflectance>0 )
+
     # Linearly interpolate sat reflectance at the cmf table's wavelengths
     int_r1 = interp1d( wavelength, reflectance, axis = 0, kind = 'linear')(cmfi['wavelength'].values)
     
@@ -129,7 +132,7 @@ def calc_ForelUle_image(wavelength,
     # ----- fui approximation
     fu_i = np.zeros(a_i.shape)
     fu_i[ a_i >= fui["lowerlimit"][0]] = 1   #FUI = 1 its > Average
-    fu_i[ np.isnan(a_i) ] = 0           # FUI = NAN = 0
+    fu_i[ np.isnan(a_i) ] = float('nan')           # FUI = NAN = 0
     fu_i[ a_i <= fui["lowerlimit"].iloc[-1]] = 21  #FUI = 1 its > Average
     
     # find closest FU index from angle
