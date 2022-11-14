@@ -132,7 +132,7 @@ def calc_ForelUle_image(wavelength,
     # ----- fui approximation
     fu_i = np.zeros(a_i.shape)
     fu_i[ a_i >= fui["lowerlimit"][0]] = 1   #FUI = 1 its > Average
-    fu_i[ np.isnan(a_i) ] = float('nan')           # FUI = NAN = 0
+    fu_i[ np.isnan(a_i) ] = float('nan')           # FUI = NAN
     fu_i[ a_i <= fui["lowerlimit"].iloc[-1]] = 21  #FUI = 1 its > Average
     
     # find closest FU index from angle
