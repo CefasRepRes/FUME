@@ -4,10 +4,13 @@ Works with both point data (observations) and images (satellite).
 
 Notebooks:
 
-* Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015)
-* Test_FU_images - Applies FU to test images
+* Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015) 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tiagoams/FUME/HEAD?labpath=Test_FU.ipynb)
+* Test_FU_images - Applies FU to test images 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tiagoams/FUME/HEAD?labpath=Test_FU_images.ipynb)
 * forel_ule_tutorial.ipynb - Step by step calculation, with formulae and references.
-* prep_test_images.ipynb - Utility to generate test images included.
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tiagoams/FUME/HEAD?labpath=forel_ule_tutorial.ipynb)
+* prep_test_images.ipynb - Utility to create test images included from full scenes downloaded from EUMETSAT or sci-hub.
 
 Module fume
 ```
