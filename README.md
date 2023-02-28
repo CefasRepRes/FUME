@@ -2,13 +2,13 @@
 Calculates the Forel-Ule Index from surface reflectances
 Works with both point data (observations) and images (satellite). 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tiagoams/FUME/HEAD)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/CefasRepRes/FUME/HEAD)
 Click to run on the Binder Cloud. This will takes a few minutes as all the packages are installed on a computer far, far away.
 
 ## Notebooks:
 
-* Test_FU - compares this implementation with the published formulae in Woerd and Wernand (2015) 
-* Test_FU_images - Applies FU to test images 
+* Test_FUipynb - compares this implementation with the published formulae in Woerd and Wernand (2015) 
+* Test_FU_images.ipynb - Applies FU to test images 
 * forel_ule_tutorial.ipynb - Step by step calculation, with formulae and references.
 * prep_test_images.ipynb - Utility to create test images included from full scenes downloaded from EUMETSAT or sci-hub.
 
@@ -30,7 +30,7 @@ Click to run on the Binder Cloud. This will takes a few minutes as all the packa
 ### Installation 
 Install in develop mode with:
 
-    git clone https://github.com/jobel-openscience/FUME.git
+    git clone https://github.com/CefasRepRes/FUME.git
     cd FUME
     pip install -e . 
 
