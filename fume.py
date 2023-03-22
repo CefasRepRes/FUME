@@ -21,6 +21,7 @@ def package_path(*paths, package_directory=os.path.dirname(os.path.abspath(__fil
 
 sensor_corr_file = package_path('data','sensor_hue_corr_WW2015.csv')
 
+
 def _polynomial(coefs,x):
     order = len(coefs)-1
     return sum( [coef*x**(order-i) for i,coef in enumerate(coefs) ])
@@ -60,10 +61,10 @@ def calc_ForelUle_image(wavelength,
     
     Delta = cmf['wavelength'][1] - cmf['wavelength'][0]
     
-    # find overping wavlengths between cmf and multispectral image 
+    # find overlaping wavelengths between cmf and multispectral image 
     start = max([cmf['wavelength'].iloc[0], wavelength.min()])
     end = min([cmf['wavelength'].iloc[-1], wavelength.max()])
-    #print('wavelength overlap', start,end)
+    print('wavelength overlap', start,end)
     cmfi = cmf[ (cmf['wavelength'] >= start) & (cmf['wavelength'] <= end) ]
         
     cmfi = {"wavelength": cmfi['wavelength'],
@@ -71,12 +72,13 @@ def calc_ForelUle_image(wavelength,
             "y": np.reshape( cmfi['y'].values, [len(cmfi['y']),1,1] ),
             "z": np.reshape( cmfi['z'].values, [len(cmfi['z']),1,1] )}
  
-    # Filter out unphysical reflectances from Atmospheric Correction
-    reflectance = reflectance.where( reflectance>0 )
+    # Set to 0 unphysical reflectances from Atmospheric Correction
+    reflectance = reflectance.where( reflectance>=0, other=0 )
 
     # Linearly interpolate sat reflectance at the cmf table's wavelengths
-    int_r1 = interp1d( wavelength, reflectance, axis = 0, kind = 'linear')(cmfi['wavelength'].values)
-    
+    int_rint = interp1d( wavelength, reflectance, axis = 0, kind = 'linear')
+    int_r1 = int_rint(cmfi['wavelength'].values)
+
     # Creating a dictionary to hold the reflectance values as tristimulus
     r = {"x": [], "y": [], "z": []}
     
@@ -121,11 +123,6 @@ def calc_ForelUle_image(wavelength,
         sensor_coef = sensorcorrdf.loc[sensorcorr].values
 
         anglecorr = _polynomial(sensor_coef, a_i/100)
-#        correctionOLCI = (-12.5076*pow(a_i100,5) + 
-#                        91.6345*pow(a_i100,4) - 
-#                        249.8480*pow(a_i100,3) + 
-#                        308.6561*pow(a_i100,2) - 
-#                        165.4818*a_i100 + 28.5608 )
 
         a_i = a_i + anglecorr
     
