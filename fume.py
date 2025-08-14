@@ -19,12 +19,40 @@ from matplotlib.colors import LinearSegmentedColormap
 def package_path(*paths, package_directory=os.path.dirname(os.path.abspath(__file__))):
     return os.path.join(package_directory, *paths)
 
-sensor_corr_file = package_path('data','sensor_hue_corr_WW2015.csv')
+sensor_corr_file = package_path('data','sensor_hue_corr_WW2018.csv')
 
 
-def _polynomial(coefs,x):
+def _polynomial(coefs, x, lim=None):
+    """
+    Calculate polynomial
+
+    Args:
+        coefs: Sequence of numerical coefficients
+        x: sequence of values for which the polynomial will be calculated
+        lim: sequence of lower and upper values for which the polynomial
+            is applicable. Outside this, a flat correction will be applied
+    Returns:
+        corr: list with same length as x containing the values of the
+            polynomial for the values in x
+    """
+
     order = len(coefs)-1
-    return sum( [coef*x**(order-i) for i,coef in enumerate(coefs) ])
+    x = np.array(x)
+    correc = sum( [coef*x**(order-i) for i,coef in enumerate(coefs) ])
+
+    if lim:
+        # outside the validity inteval the polynomial becomes flat
+        if lim[0]:
+            leftcorr = sum( [coef*lim[0]**(order-i) for i,coef in enumerate(coefs) ])
+            correc[x<lim[0]] = leftcorr
+            print(lim[0], leftcorr)
+
+        if lim[1]:
+            rightcorr = sum( [coef*lim[1]**(order-i) for i,coef in enumerate(coefs) ])
+            correc[correc<lim[1]] = rightcorr
+
+
+    return correc
 
 
 def calc_ForelUle_image(wavelength, 
@@ -116,13 +144,17 @@ def calc_ForelUle_image(wavelength,
     
 
     if sensorcorr:
-        # Intrument correction for Hue Angle (Woerd and Wernand 2015)
+        # Intrument correction for Hue Angle (Woerd and Wernand 2015, 2018)
         # polynomical correction works on Hue angle (deg)/100
 
         sensorcorrdf = pd.read_csv(sensor_corr_file,index_col=0,)
         sensor_coef = sensorcorrdf.loc[sensorcorr].values
 
-        anglecorr = _polynomial(sensor_coef, a_i/100)
+        # Apply polynomail correction with a cap for values below 37 deg
+        anglecorr = _polynomial(sensor_coef, 
+                                a_i/100, 
+                                lim=(37/100, None))
+        
 
         a_i = a_i + anglecorr
     
@@ -141,6 +173,7 @@ def calc_ForelUle_image(wavelength,
 
 def calc_fu_WW2015(wavelength, reflec,sensor):
     # calculates Forel Ule following Woerd and Wernand 2015 supplementary material
+    # to test calc_ForelUle_image()
     #
     # wavelength - 1D array with sensor wavelength in  nm
     # reflec - 1D array with measuredremote sensing reflectance (Rrs) in sr-1
